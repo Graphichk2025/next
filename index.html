@@ -1,816 +1,1011 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXT - Event Management</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #ffffff;
-            color: #333;
-            overflow-x: hidden;
-        }
-
-        /* Logo Splash Screen */
-        #splash-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            animation: fadeOut 0.5s ease-in-out 3.5s forwards;
-        }
-
-        @keyframes fadeOut {
-            to {
-                opacity: 0;
-                visibility: hidden;
-            }
-        }
-
-        .logo-container {
-            text-align: center;
-            animation: scaleIn 1s ease-in-out;
-        }
-
-        @keyframes scaleIn {
-            from {
-                transform: scale(0);
-                opacity: 0;
-            }
-            to {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
-        .logo {
-            font-size: 96px;
-            font-weight: 800;
-            color: #fff;
-            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
-            font-family: 'Playfair Display', serif;
-            letter-spacing: 8px;
-        }
-
-        .logo-subtitle {
-            font-size: 20px;
-            color: #fff;
-            margin-top: 15px;
-            letter-spacing: 3px;
-            font-weight: 300;
-        }
-
-        /* Main Content */
-        #main-content {
-            display: none;
-            animation: fadeIn 0.5s ease-in-out;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-
-        /* Navbar */
-        nav {
-            position: sticky;
-            top: 0;
-            background-color: #fff;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
-            z-index: 1000;
-            padding: 20px 50px;
-        }
-
-        .nav-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .nav-left {
-            display: flex;
-            align-items: center;
-            gap: 30px;
-        }
-
-        .menu-toggle {
-            font-size: 30px;
-            cursor: pointer;
-            color: #FFD700;
-        }
-
-        .nav-logo {
-            font-size: 32px;
-            font-weight: 800;
-            color: #FFD700;
-            font-family: 'Playfair Display', serif;
-            letter-spacing: 4px;
-        }
-
-        /* Sidebar Menu */
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: -300px;
-            width: 300px;
-            height: 100vh;
-            background-color: #fff;
-            box-shadow: 2px 0 15px rgba(0,0,0,0.1);
-            transition: left 0.3s ease;
-            z-index: 2000;
-            padding: 30px;
-        }
-
-        .sidebar.active {
-            left: 0;
-        }
-
-        .sidebar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 40px;
-        }
-
-        .sidebar-logo {
-            font-size: 28px;
-            font-weight: 800;
-            color: #FFD700;
-            font-family: 'Playfair Display', serif;
-            letter-spacing: 4px;
-        }
-
-        .close-sidebar {
-            font-size: 30px;
-            cursor: pointer;
-            color: #666;
-        }
-
-        .sidebar-menu {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-        }
-
-        .sidebar-menu a {
-            text-decoration: none;
-            color: #333;
-            font-weight: 500;
-            font-size: 18px;
-            transition: color 0.3s;
-            cursor: pointer;
-        }
-
-        .sidebar-menu a:hover {
-            color: #FFD700;
-        }
-
-        /* Overlay */
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            z-index: 1500;
-            display: none;
-        }
-
-        .overlay.active {
-            display: block;
-        }
-
-        .visitor-count {
-            background-color: #FFD700;
-            color: #333;
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        /* WhatsApp Button */
-        .whatsapp-btn {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 60px;
-            height: 60px;
-            background-color: #25D366;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
-            z-index: 1000;
-            transition: all 0.3s;
-        }
-
-        .whatsapp-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 25px rgba(37, 211, 102, 0.6);
-        }
-
-        .whatsapp-btn svg {
-            width: 32px;
-            height: 32px;
-            fill: #fff;
-        }
-
-        /* Instagram Button */
-        .instagram-btn {
-            position: fixed;
-            bottom: 110px;
-            right: 30px;
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            box-shadow: 0 4px 20px rgba(188, 24, 136, 0.4);
-            z-index: 1000;
-            transition: all 0.3s;
-        }
-
-        .instagram-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 25px rgba(188, 24, 136, 0.6);
-        }
-
-        .instagram-btn svg {
-            width: 32px;
-            height: 32px;
-            fill: #fff;
-        }
-
-        /* Hero Section with Changing Background */
-        .hero {
-            position: relative;
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #ffffff;
-        }
-
-        .bg-slideshow {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        .bg-slide {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            opacity: 0;
-            transition: opacity 1.5s ease-in-out;
-        }
-
-        .bg-slide.active {
-            opacity: 0.25;
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 2;
-            text-align: center;
-            padding: 20px;
-        }
-
-        .hero h1 {
-            font-size: 80px;
-            color: #333;
-            margin-bottom: 25px;
-            font-family: 'Playfair Display', serif;
-            font-weight: 800;
-            letter-spacing: 2px;
-        }
-
-        .hero p {
-            font-size: 26px;
-            color: #555;
-            margin-bottom: 40px;
-            font-weight: 300;
-            letter-spacing: 1px;
-        }
-
-        .cta-button {
-            background-color: #FFD700;
-            color: #333;
-            padding: 18px 50px;
-            font-size: 16px;
-            border: none;
-            border-radius: 35px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-            box-shadow: 0 5px 20px rgba(255,215,0,0.3);
-            letter-spacing: 1px;
-        }
-
-        .cta-button:hover {
-            background-color: #FFA500;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(255,215,0,0.5);
-        }
-
-        /* Events Section */
-        .events-section {
-            padding: 100px 50px;
-            background-color: #ffffff;
-        }
-
-        .section-title {
-            text-align: center;
-            font-size: 48px;
-            margin-bottom: 60px;
-            color: #333;
-            font-family: 'Playfair Display', serif;
-            font-weight: 800;
-        }
-
-        .events-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 35px;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .event-card {
-            background-color: #fff;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 5px 25px rgba(0,0,0,0.08);
-            cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
-            border: 1px solid #f0f0f0;
-        }
-
-        .event-card:hover {
-            transform: translateY(-12px);
-            box-shadow: 0 12px 35px rgba(255,215,0,0.25);
-        }
-
-        .event-image {
-            width: 100%;
-            height: 220px;
-            background: linear-gradient(135deg, #FFD700, #FFA500);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 24px;
-            color: #fff;
-            font-weight: 700;
-            font-family: 'Playfair Display', serif;
-        }
-
-        .event-info {
-            padding: 25px;
-        }
-
-        .event-info h3 {
-            font-size: 24px;
-            margin-bottom: 12px;
-            color: #333;
-            font-weight: 600;
-        }
-
-        .event-info p {
-            color: #666;
-            margin-bottom: 20px;
-            font-size: 15px;
-        }
-
-        .view-details-btn {
-            background-color: #FFD700;
-            color: #333;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-            font-size: 14px;
-        }
-
-        .view-details-btn:hover {
-            background-color: #FFA500;
-        }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.7);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background-color: #fff;
-            padding: 50px;
-            border-radius: 20px;
-            max-width: 650px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-            position: relative;
-        }
-
-        .modal-content h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: 32px;
-            margin-bottom: 20px;
-            color: #333;
-        }
-
-        .modal-content p {
-            line-height: 1.8;
-            color: #555;
-            font-size: 16px;
-        }
-
-        .close-modal {
-            position: absolute;
-            top: 20px;
-            right: 25px;
-            font-size: 36px;
-            cursor: pointer;
-            color: #666;
-            font-weight: 300;
-        }
-
-        .close-modal:hover {
-            color: #FFD700;
-        }
-
-        /* Team Section */
-        .team-section {
-            padding: 100px 50px;
-            background-color: #ffffff;
-        }
-
-        .team-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 50px;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .team-member {
-            text-align: center;
-        }
-
-        .member-image {
-            width: 160px;
-            height: 160px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #FFD700, #FFA500);
-            margin: 0 auto 25px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 20px;
-            color: #fff;
-            box-shadow: 0 5px 25px rgba(255,215,0,0.3);
-            font-weight: 700;
-            font-family: 'Playfair Display', serif;
-        }
-
-        .member-name {
-            font-size: 24px;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 8px;
-        }
-
-        .member-role {
-            color: #666;
-            font-size: 16px;
-            font-weight: 400;
-        }
-
-        /* Footer */
-        footer {
-            background-color: #333;
-            color: #fff;
-            text-align: center;
-            padding: 40px;
-            font-size: 15px;
-        }
-
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 42px;
-            }
-
-            .hero p {
-                font-size: 18px;
-            }
-
-            nav {
-                padding: 15px 25px;
-            }
-
-            .events-section,
-            .team-section {
-                padding: 60px 25px;
-            }
-
-            .section-title {
-                font-size: 36px;
-            }
-
-            .whatsapp-btn,
-            .instagram-btn {
-                width: 55px;
-                height: 55px;
-                right: 20px;
-            }
-
-            .instagram-btn {
-                bottom: 95px;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>secret25</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: #000;
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    .login-screen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .login-screen h1 {
+      font-size: 48px;
+      font-weight: 300;
+      letter-spacing: 2px;
+    }
+
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      width: 320px;
+      max-width: 90%;
+    }
+
+    .login-form input {
+      padding: 16px;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      color: #fff;
+      font-size: 16px;
+      border-radius: 4px;
+    }
+
+    .login-form input:focus {
+      outline: none;
+      border-color: #666;
+    }
+
+    .login-form button {
+      padding: 16px;
+      background: #fff;
+      color: #000;
+      border: none;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+
+    .login-form button:hover {
+      background: #e0e0e0;
+    }
+
+    .error-msg {
+      color: #ff4444;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .app-container {
+      display: none;
+      min-height: 100vh;
+    }
+
+    .app-container.active {
+      display: flex;
+    }
+
+    .sidebar {
+      width: 240px;
+      background: #0a0a0a;
+      border-right: 1px solid #222;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s;
+    }
+
+    .sidebar.collapsed {
+      transform: translateX(-240px);
+    }
+
+    .sidebar-header {
+      padding: 24px;
+      border-bottom: 1px solid #222;
+    }
+
+    .sidebar-header h2 {
+      font-size: 24px;
+      font-weight: 300;
+      letter-spacing: 1px;
+    }
+
+    .sidebar-menu {
+      flex: 1;
+      padding: 16px 0;
+    }
+
+    .menu-item {
+      padding: 16px 24px;
+      cursor: pointer;
+      transition: background 0.2s;
+      border-left: 3px solid transparent;
+    }
+
+    .menu-item:hover {
+      background: #1a1a1a;
+    }
+
+    .menu-item.active {
+      background: #1a1a1a;
+      border-left-color: #fff;
+    }
+
+    .sidebar-footer {
+      padding: 16px 24px;
+      border-top: 1px solid #222;
+    }
+
+    .logout-btn {
+      width: 100%;
+      padding: 12px;
+      background: transparent;
+      color: #fff;
+      border: 1px solid #333;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+
+    .logout-btn:hover {
+      background: #1a1a1a;
+      border-color: #666;
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .header {
+      padding: 24px;
+      border-bottom: 1px solid #222;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .menu-toggle {
+      display: none;
+      background: transparent;
+      border: 1px solid #333;
+      color: #fff;
+      padding: 8px 16px;
+      cursor: pointer;
+      border-radius: 4px;
+      margin-right: 16px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .header-info {
+      display: flex;
+      gap: 24px;
+      font-size: 14px;
+    }
+
+    .fullscreen-clock-btn {
+      padding: 8px 16px;
+      background: #fff;
+      color: #000;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+
+    .fullscreen-clock-btn:hover {
+      background: #e0e0e0;
+    }
+
+    .content-area {
+      padding: 32px;
+      flex: 1;
+    }
+
+    .content-section {
+      display: none;
+    }
+
+    .content-section.active {
+      display: block;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      max-width: 800px;
+    }
+
+    .calendar-header {
+      text-align: center;
+      padding: 12px;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    .calendar-day {
+      aspect-ratio: 1;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      padding: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .calendar-day:hover:not(.locked) {
+      border-color: #666;
+      background: #222;
+    }
+
+    .calendar-day.today {
+      border-color: #fff;
+    }
+
+    .calendar-day.completed {
+      background: #0d4d0d;
+    }
+
+    .calendar-day.locked {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .calendar-day-number {
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+
+    .calendar-day-task {
+      font-size: 10px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+    }
+
+    .calendar-locked-msg {
+      text-align: center;
+      padding: 32px;
+      font-size: 18px;
+      color: #666;
+    }
+
+    .download-btn {
+      margin-top: 24px;
+      padding: 12px 24px;
+      background: #fff;
+      color: #000;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.9);
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: #0a0a0a;
+      border: 1px solid #333;
+      padding: 32px;
+      max-width: 500px;
+      width: 90%;
+      border-radius: 8px;
+    }
+
+    .modal-content h3 {
+      margin-bottom: 16px;
+      font-weight: 400;
+    }
+
+    .modal-content input,
+    .modal-content textarea {
+      width: 100%;
+      padding: 12px;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      color: #fff;
+      font-size: 14px;
+      border-radius: 4px;
+      margin-bottom: 16px;
+      font-family: inherit;
+    }
+
+    .modal-content textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+    }
+
+    .modal-actions button {
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .btn-primary {
+      background: #fff;
+      color: #000;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: #fff;
+      border: 1px solid #333;
+    }
+
+    .checkbox-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .checkbox-container input[type="checkbox"] {
+      width: auto;
+      margin: 0;
+    }
+
+    .timers-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .timer-card {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      padding: 24px;
+      border-radius: 8px;
+    }
+
+    .timer-card h3 {
+      margin-bottom: 8px;
+      font-weight: 400;
+    }
+
+    .timer-quote {
+      font-size: 12px;
+      color: #999;
+      margin-bottom: 16px;
+      font-style: italic;
+    }
+
+    .timer-display {
+      font-size: 32px;
+      font-weight: 300;
+      margin-bottom: 16px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .timer-card.finished {
+      border-color: #fff;
+      background: #1a1a1a;
+    }
+
+    .timer-card.finished .timer-display {
+      color: #4d4;
+    }
+
+    .timer-controls {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .timer-controls button {
+      padding: 8px 16px;
+      background: transparent;
+      color: #fff;
+      border: 1px solid #333;
+      cursor: pointer;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+
+    .timer-controls button:hover {
+      background: #222;
+    }
+
+    .add-timer-btn {
+      padding: 12px 24px;
+      background: #fff;
+      color: #000;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .secret-section textarea {
+      width: 100%;
+      min-height: 200px;
+      padding: 16px;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      color: #fff;
+      font-size: 14px;
+      border-radius: 4px;
+      font-family: inherit;
+      resize: vertical;
+    }
+
+    .secret-section button {
+      margin-top: 16px;
+      padding: 12px 24px;
+      background: #fff;
+      color: #000;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .fullscreen-clock-view {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: #000;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      z-index: 2000;
+    }
+
+    .fullscreen-clock-view.active {
+      display: flex;
+    }
+
+    .fullscreen-time {
+      font-size: 120px;
+      font-weight: 200;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 4px;
+    }
+
+    .fullscreen-date {
+      font-size: 24px;
+      font-weight: 300;
+      margin-top: 16px;
+      color: #999;
+    }
+
+    .close-fullscreen {
+      position: absolute;
+      top: 32px;
+      right: 32px;
+      padding: 12px 24px;
+      background: transparent;
+      color: #fff;
+      border: 1px solid #333;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    @media (max-width: 768px) {
+      .menu-toggle {
+        display: block;
+      }
+
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        z-index: 100;
+      }
+
+      .header-info {
+        flex-direction: column;
+        gap: 8px;
+        font-size: 12px;
+      }
+
+      .content-area {
+        padding: 16px;
+      }
+
+      .calendar-grid {
+        gap: 4px;
+      }
+
+      .calendar-day {
+        padding: 4px;
+      }
+
+      .fullscreen-time {
+        font-size: 64px;
+      }
+
+      .fullscreen-date {
+        font-size: 18px;
+      }
+
+      .timers-container {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
-    <!-- Splash Screen -->
-    <div id="splash-screen">
-        <div class="logo-container">
-            <div class="logo">NEXT</div>
-            <div class="logo-subtitle">EVENTS REDEFINED</div>
-        </div>
+  <div class="login-screen" id="loginScreen">
+    <h1>secret25</h1>
+    <div class="login-form">
+      <input type="password" id="passwordInput" placeholder="Enter password" />
+      <button onclick="login()">Enter</button>
+      <div class="error-msg" id="errorMsg"></div>
+    </div>
+  </div>
+
+  <div class="app-container" id="appContainer">
+    <div class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <h2>secret25</h2>
+      </div>
+      <div class="sidebar-menu">
+        <div class="menu-item active" onclick="switchSection('calendar')">Calendar</div>
+        <div class="menu-item" onclick="switchSection('timers')">Timers</div>
+        <div class="menu-item" onclick="switchSection('secret')">Secret</div>
+        <div class="menu-item" onclick="openFullscreenClock()">Fullscreen Clock</div>
+      </div>
+      <div class="sidebar-footer">
+        <button class="logout-btn" onclick="logout()">Logout</button>
+      </div>
     </div>
 
-    <!-- Main Content -->
-    <div id="main-content">
-        <!-- Overlay -->
-        <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+    <div class="main-content">
+      <div class="header">
+        <div class="header-left">
+          <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+          <div class="header-info">
+            <span id="currentDate"></span>
+            <span id="currentTime"></span>
+          </div>
+        </div>
+        <button class="fullscreen-clock-btn" onclick="openFullscreenClock()">Fullscreen Clock</button>
+      </div>
 
-        <!-- Sidebar -->
-        <div class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <div class="sidebar-logo">NEXT</div>
-                <div class="close-sidebar" onclick="closeSidebar()">&times;</div>
-            </div>
-            <ul class="sidebar-menu">
-                <li><a onclick="scrollToSection('home')">Home</a></li>
-                <li><a onclick="scrollToSection('events')">Events</a></li>
-                <li><a onclick="scrollToSection('team')">Team</a></li>
-            </ul>
+      <div class="content-area">
+        <div class="content-section active" id="calendarSection">
+          <div id="calendarContainer"></div>
         </div>
 
-        <!-- Navigation -->
-        <nav>
-            <div class="nav-container">
-                <div class="nav-left">
-                    <div class="menu-toggle" onclick="openSidebar()">&#9776;</div>
-                    <div class="nav-logo">NEXT</div>
-                </div>
-                <span class="visitor-count">Visitors: <span id="visitorCount">0</span></span>
-            </div>
-        </nav>
-
-        <!-- Hero Section -->
-        <section class="hero" id="home">
-            <div class="bg-slideshow">
-                <img src="https://images.pexels.com/photos/1190297/pexels-photo-1190297.jpeg?auto=compress&cs=tinysrgb&w=1920" alt="Event" class="bg-slide active">
-                <img src="https://images.pexels.com/photos/2263436/pexels-photo-2263436.jpeg?auto=compress&cs=tinysrgb&w=1920" alt="Event" class="bg-slide">
-                <img src="https://images.pexels.com/photos/1105666/pexels-photo-1105666.jpeg?auto=compress&cs=tinysrgb&w=1920" alt="Event" class="bg-slide">
-                <img src="https://images.pexels.com/photos/2747449/pexels-photo-2747449.jpeg?auto=compress&cs=tinysrgb&w=1920" alt="Event" class="bg-slide">
-            </div>
-            <div class="hero-content">
-                <h1>Welcome to NEXT</h1>
-                <p>Creating Unforgettable Experiences</p>
-                <button class="cta-button" onclick="scrollToSection('events')">Explore Events</button>
-            </div>
-        </section>
-
-        <!-- Events Section -->
-        <section class="events-section" id="events">
-            <h2 class="section-title">Our Events</h2>
-            <div class="events-grid">
-                <div class="event-card" onclick="showEventDetails('Tech Conference 2025', 'Join us for the biggest tech conference of the year! Featuring keynote speakers, workshops, and networking opportunities with industry leaders. Date: March 15-17, 2025. Venue: Grand Convention Center.')">
-                    <div class="event-image">TECH</div>
-                    <div class="event-info">
-                        <h3>Tech Conference 2025</h3>
-                        <p>March 15-17, 2025</p>
-                        <button class="view-details-btn">View Details</button>
-                    </div>
-                </div>
-                <div class="event-card" onclick="showEventDetails('Music Festival', 'Experience the ultimate music festival with top artists from around the world. Three days of non-stop entertainment, food, and fun. Date: June 20-22, 2025. Venue: Riverside Park.')">
-                    <div class="event-image">MUSIC</div>
-                    <div class="event-info">
-                        <h3>Music Festival</h3>
-                        <p>June 20-22, 2025</p>
-                        <button class="view-details-btn">View Details</button>
-                    </div>
-                </div>
-                <div class="event-card" onclick="showEventDetails('Business Summit', 'Network with business leaders and entrepreneurs. Learn about the latest trends in business and innovation. Date: April 5, 2025. Venue: Downtown Business Center.')">
-                    <div class="event-image">BUSINESS</div>
-                    <div class="event-info">
-                        <h3>Business Summit</h3>
-                        <p>April 5, 2025</p>
-                        <button class="view-details-btn">View Details</button>
-                    </div>
-                </div>
-                <div class="event-card" onclick="showEventDetails('Art Exhibition', 'Discover stunning artworks from local and international artists. A celebration of creativity and culture. Date: May 10-15, 2025. Venue: City Art Gallery.')">
-                    <div class="event-image">ART</div>
-                    <div class="event-info">
-                        <h3>Art Exhibition</h3>
-                        <p>May 10-15, 2025</p>
-                        <button class="view-details-btn">View Details</button>
-                    </div>
-                </div>
-                <div class="event-card" onclick="showEventDetails('Food Festival', 'Taste delicious cuisines from around the world. Food trucks, cooking demonstrations, and culinary competitions. Date: July 12-14, 2025. Venue: Central Food Court.')">
-                    <div class="event-image">FOOD</div>
-                    <div class="event-info">
-                        <h3>Food Festival</h3>
-                        <p>July 12-14, 2025</p>
-                        <button class="view-details-btn">View Details</button>
-                    </div>
-                </div>
-                <div class="event-card" onclick="showEventDetails('Sports Championship', 'Watch the most exciting sports championship with top athletes competing for glory. Date: August 25-27, 2025. Venue: National Stadium.')">
-                    <div class="event-image">SPORTS</div>
-                    <div class="event-info">
-                        <h3>Sports Championship</h3>
-                        <p>August 25-27, 2025</p>
-                        <button class="view-details-btn">View Details</button>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Modal -->
-        <div class="modal" id="eventModal">
-            <div class="modal-content">
-                <span class="close-modal" onclick="closeModal()">&times;</span>
-                <h2 id="modalTitle"></h2>
-                <p id="modalDescription"></p>
-            </div>
+        <div class="content-section" id="timersSection">
+          <div class="timers-container" id="timersContainer"></div>
+          <button class="add-timer-btn" onclick="openAddTimerModal()">Add Timer</button>
         </div>
 
-        <!-- Team Section -->
-        <section class="team-section" id="team">
-            <h2 class="section-title">Meet Our Team</h2>
-            <div class="team-grid">
-                <div class="team-member">
-                    <div class="member-image">JS</div>
-                    <div class="member-name">John Smith</div>
-                    <div class="member-role">CEO & Founder</div>
-                </div>
-                <div class="team-member">
-                    <div class="member-image">SJ</div>
-                    <div class="member-name">Sarah Johnson</div>
-                    <div class="member-role">Event Manager</div>
-                </div>
-                <div class="team-member">
-                    <div class="member-image">MC</div>
-                    <div class="member-name">Michael Chen</div>
-                    <div class="member-role">Marketing Director</div>
-                </div>
-                <div class="team-member">
-                    <div class="member-image">ED</div>
-                    <div class="member-name">Emily Davis</div>
-                    <div class="member-role">Operations Head</div>
-                </div>
-                <div class="team-member">
-                    <div class="member-image">DW</div>
-                    <div class="member-name">David Wilson</div>
-                    <div class="member-role">Creative Designer</div>
-                </div>
-                <div class="team-member">
-                    <div class="member-image">LA</div>
-                    <div class="member-name">Lisa Anderson</div>
-                    <div class="member-role">PR Specialist</div>
-                </div>
-            </div>
-        </section>
-
-        <!-- WhatsApp Button -->
-        <a href="https://wa.me/1234567890?text=Hi%20NEXT!%20I%20want%20to%20join%20the%20community" target="_blank" class="whatsapp-btn">
-            <svg viewBox="0 0 32 32">
-                <path d="M27.281 4.65C24.562 1.906 20.906.5 17.031.5 8.5.5 1.562 7.438 1.562 15.969c0 2.719.719 5.375 2.063 7.719L1.5 31.5l8.031-2.094c2.25 1.219 4.781 1.875 7.375 1.875h.063c8.469 0 15.406-6.938 15.406-15.469 0-4.125-1.594-8-4.5-10.906zM17.031 28.813h-.063c-2.313 0-4.563-.625-6.531-1.781l-.469-.281-4.844 1.281 1.313-4.719-.313-.5c-1.281-2.031-1.969-4.375-1.969-6.781 0-7.031 5.719-12.75 12.75-12.75 3.406 0 6.594 1.344 8.969 3.719 2.406 2.406 3.719 5.625 3.719 8.969 0 7.031-5.719 12.75-12.563 12.75zm6.969-9.531c-.375-.188-2.219-1.094-2.563-1.219-.344-.156-.594-.219-.844.188-.25.406-.969 1.219-1.188 1.469-.219.25-.438.281-.813.094-.375-.188-1.594-.594-3.031-1.875-1.125-.969-1.875-2.188-2.094-2.563-.219-.375-.031-.594.156-.781.188-.188.406-.469.594-.719.188-.25.25-.406.375-.656s.063-.5-.031-.719c-.094-.188-.844-2.031-1.156-2.781-.313-.719-.625-.625-.844-.625h-.719c-.25 0-.656.094-.969.469-.344.375-1.281 1.25-1.281 3.063 0 1.813 1.313 3.563 1.5 3.813.188.25 2.563 3.938 6.219 5.531.875.375 1.563.594 2.094.781.875.25 1.688.219 2.313.125.719-.094 2.219-.906 2.531-1.781.313-.875.313-1.625.219-1.781-.094-.156-.344-.25-.719-.406z"/>
-            </svg>
-        </a>
-
-        <!-- Instagram Button -->
-        <a href="https://instagram.com/next_events" target="_blank" class="instagram-btn">
-            <svg viewBox="0 0 24 24">
-                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-            </svg>
-        </a>
-
-        <!-- Footer -->
-        <footer>
-            <p>&copy; 2025 NEXT. All rights reserved.</p>
-        </footer>
+        <div class="content-section secret-section" id="secretSection">
+          <h2 style="margin-bottom: 16px; font-weight: 400;">Secret Notes & Links</h2>
+          <textarea id="secretNotes" placeholder="Paste your study links and notes here..."></textarea>
+          <button onclick="saveSecretNotes()">Save</button>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <script>
-        // Show main content after splash screen
-        setTimeout(() => {
-            document.getElementById('main-content').style.display = 'block';
-        }, 4000);
+  <div class="modal" id="dayModal">
+    <div class="modal-content">
+      <h3 id="modalTitle"></h3>
+      <input type="text" id="taskInput" placeholder="Enter task for this day" />
+      <div class="checkbox-container">
+        <input type="checkbox" id="completedCheckbox" />
+        <label for="completedCheckbox">Mark as completed</label>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-secondary" onclick="closeDayModal()">Cancel</button>
+        <button class="btn-primary" onclick="saveDayTask()">Save</button>
+      </div>
+    </div>
+  </div>
 
-        // Visitor Counter
-        let visitorCount = localStorage.getItem('visitorCount') || 0;
-        visitorCount = parseInt(visitorCount) + 1;
-        localStorage.setItem('visitorCount', visitorCount);
-        document.getElementById('visitorCount').textContent = visitorCount;
+  <div class="modal" id="timerModal">
+    <div class="modal-content">
+      <h3>Create Timer</h3>
+      <input type="text" id="timerTitle" placeholder="Timer title" />
+      <textarea id="timerQuote" placeholder="Optional quote (shown when timer finishes)"></textarea>
+      <input type="number" id="timerHours" placeholder="Hours" min="0" value="0" />
+      <input type="number" id="timerMinutes" placeholder="Minutes" min="0" value="0" />
+      <input type="number" id="timerSeconds" placeholder="Seconds" min="0" value="0" />
+      <div class="modal-actions">
+        <button class="btn-secondary" onclick="closeTimerModal()">Cancel</button>
+        <button class="btn-primary" onclick="createTimer()">Create</button>
+      </div>
+    </div>
+  </div>
 
-        // Background Image Slideshow
-        let currentSlide = 0;
-        const slides = document.querySelectorAll('.bg-slide');
+  <div class="fullscreen-clock-view" id="fullscreenClock">
+    <button class="close-fullscreen" onclick="closeFullscreenClock()">Close</button>
+    <div class="fullscreen-time" id="fullscreenTime"></div>
+    <div class="fullscreen-date" id="fullscreenDate"></div>
+  </div>
 
-        function changeBackground() {
-            slides[currentSlide].classList.remove('active');
-            currentSlide = (currentSlide + 1) % slides.length;
-            slides[currentSlide].classList.add('active');
+  <script>
+    const PASSWORD = 'secret2025';
+    let currentSection = 'calendar';
+    let selectedDay = null;
+    let timers = [];
+
+    function login() {
+      const input = document.getElementById('passwordInput');
+      const errorMsg = document.getElementById('errorMsg');
+      
+      if (input.value === PASSWORD) {
+        sessionStorage.setItem('authenticated', 'true');
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('appContainer').classList.add('active');
+        errorMsg.textContent = '';
+        input.value = '';
+        init();
+      } else {
+        errorMsg.textContent = 'Incorrect password';
+      }
+    }
+
+    function logout() {
+      sessionStorage.removeItem('authenticated');
+      document.getElementById('loginScreen').style.display = 'flex';
+      document.getElementById('appContainer').classList.remove('active');
+      document.getElementById('passwordInput').value = '';
+    }
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('collapsed');
+    }
+
+    function switchSection(section) {
+      currentSection = section;
+      document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+      document.querySelectorAll('.content-section').forEach(sec => sec.classList.remove('active'));
+      
+      event.target.classList.add('active');
+      document.getElementById(section + 'Section').classList.add('active');
+      
+      if (window.innerWidth <= 768) {
+        document.getElementById('sidebar').classList.add('collapsed');
+      }
+    }
+
+    function updateDateTime() {
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('en-US', { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      });
+      const timeStr = now.toLocaleTimeString('en-US', { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        second: '2-digit'
+      });
+      
+      document.getElementById('currentDate').textContent = dateStr;
+      document.getElementById('currentTime').textContent = timeStr;
+      document.getElementById('fullscreenTime').textContent = timeStr;
+      document.getElementById('fullscreenDate').textContent = dateStr;
+    }
+
+    function renderCalendar() {
+      const container = document.getElementById('calendarContainer');
+      const now = new Date();
+      const currentYear = now.getFullYear();
+      const currentMonth = now.getMonth();
+      const currentDay = now.getDate();
+      const isAfter2025 = currentYear > 2025 || (currentYear === 2025 && currentMonth === 11 && currentDay > 31);
+      
+      if (isAfter2025) {
+        const calendarData = JSON.parse(localStorage.getItem('calendar2025') || '{}');
+        container.innerHTML = `
+          <div class="calendar-locked-msg">
+            <p>Calendar 2025 is now complete and locked.</p>
+            <button class="download-btn" onclick="downloadCalendar()">Download Calendar Snapshot</button>
+          </div>
+          <div class="calendar-grid" style="margin-top: 24px; opacity: 0.5; pointer-events: none;">
+            ${renderCalendarGrid(calendarData, true)}
+          </div>
+        `;
+        return;
+      }
+      
+      const calendarData = JSON.parse(localStorage.getItem('calendar2025') || '{}');
+      container.innerHTML = `
+        <h2 style="margin-bottom: 24px; font-weight: 400;">December 2025</h2>
+        <div class="calendar-grid">
+          ${['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => 
+            `<div class="calendar-header">${day}</div>`
+          ).join('')}
+          ${renderCalendarGrid(calendarData, false)}
+        </div>
+      `;
+    }
+
+    function renderCalendarGrid(calendarData, isLocked) {
+      const now = new Date();
+      const currentYear = now.getFullYear();
+      const currentMonth = now.getMonth();
+      const currentDay = now.getDate();
+      const firstDay = new Date(2025, 11, 1).getDay();
+      const daysInMonth = 31;
+      
+      let html = '';
+      
+      for (let i = 0; i < firstDay; i++) {
+        html += '<div></div>';
+      }
+      
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dayKey = `2025-12-${String(day).padStart(2, '0')}`;
+        const dayData = calendarData[dayKey] || { task: '', completed: false };
+        const isToday = currentYear === 2025 && currentMonth === 11 && currentDay === day;
+        const isPast = currentYear > 2025 || (currentYear === 2025 && currentMonth === 11 && currentDay > day);
+        const isLockedDay = isLocked || (dayData.completed && isPast);
+        
+        const classes = [
+          'calendar-day',
+          isToday ? 'today' : '',
+          dayData.completed ? 'completed' : '',
+          isLockedDay ? 'locked' : ''
+        ].filter(Boolean).join(' ');
+        
+        html += `
+          <div class="${classes}" onclick="openDayModal('${dayKey}', ${isLockedDay})">
+            <div class="calendar-day-number">${day}</div>
+            <div class="calendar-day-task">${dayData.task || ''}</div>
+          </div>
+        `;
+      }
+      
+      return html;
+    }
+
+    function openDayModal(dayKey, isLocked) {
+      if (isLocked) return;
+      
+      selectedDay = dayKey;
+      const calendarData = JSON.parse(localStorage.getItem('calendar2025') || '{}');
+      const dayData = calendarData[dayKey] || { task: '', completed: false };
+      
+      document.getElementById('modalTitle').textContent = `Day ${dayKey.split('-')[2]}`;
+      document.getElementById('taskInput').value = dayData.task || '';
+      document.getElementById('completedCheckbox').checked = dayData.completed || false;
+      document.getElementById('dayModal').classList.add('active');
+    }
+
+    function closeDayModal() {
+      document.getElementById('dayModal').classList.remove('active');
+      selectedDay = null;
+    }
+
+    function saveDayTask() {
+      if (!selectedDay) return;
+      
+      const calendarData = JSON.parse(localStorage.getItem('calendar2025') || '{}');
+      calendarData[selectedDay] = {
+        task: document.getElementById('taskInput').value,
+        completed: document.getElementById('completedCheckbox').checked
+      };
+      
+      localStorage.setItem('calendar2025', JSON.stringify(calendarData));
+      closeDayModal();
+      renderCalendar();
+    }
+
+    function downloadCalendar() {
+      const calendarData = JSON.parse(localStorage.getItem('calendar2025') || '{}');
+      let text = 'CALENDAR 2025 - DECEMBER\n\n';
+      
+      for (let day = 1; day <= 31; day++) {
+        const dayKey = `2025-12-${String(day).padStart(2, '0')}`;
+        const dayData = calendarData[dayKey] || { task: '', completed: false };
+        const status = dayData.completed ? '[COMPLETED]' : '[INCOMPLETE]';
+        text += `Day ${day} ${status}\n`;
+        if (dayData.task) {
+          text += `  Task: ${dayData.task}\n`;
         }
+        text += '\n';
+      }
+      
+      const blob = new Blob([text], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'calendar-2025-snapshot.txt';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
 
-        setInterval(changeBackground, 4000);
+    function loadTimers() {
+      timers = JSON.parse(localStorage.getItem('timers') || '[]');
+      renderTimers();
+    }
 
-        // Sidebar Menu
-        function openSidebar() {
-            document.getElementById('sidebar').classList.add('active');
-            document.getElementById('overlay').classList.add('active');
+    function renderTimers() {
+      const container = document.getElementById('timersContainer');
+      if (timers.length === 0) {
+        container.innerHTML = '<p style="color: #666;">No timers yet. Create one to get started.</p>';
+        return;
+      }
+      
+      container.innerHTML = timers.map((timer, index) => {
+        const remaining = timer.endTime ? Math.max(0, timer.endTime - Date.now()) : timer.duration;
+        const hours = Math.floor(remaining / 3600000);
+        const minutes = Math.floor((remaining % 3600000) / 60000);
+        const seconds = Math.floor((remaining % 60000) / 1000);
+        const displayTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        const isFinished = remaining === 0 && timer.endTime;
+        
+        return `
+          <div class="timer-card ${isFinished ? 'finished' : ''}">
+            <h3>${timer.title}</h3>
+            ${timer.quote ? `<div class="timer-quote">${timer.quote}</div>` : ''}
+            <div class="timer-display">${displayTime}</div>
+            <div class="timer-controls">
+              <button onclick="startTimer(${index})">${timer.running ? 'Pause' : 'Start'}</button>
+              <button onclick="resetTimer(${index})">Reset</button>
+              <button onclick="deleteTimer(${index})">Delete</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openAddTimerModal() {
+      document.getElementById('timerModal').classList.add('active');
+    }
+
+    function closeTimerModal() {
+      document.getElementById('timerModal').classList.remove('active');
+      document.getElementById('timerTitle').value = '';
+      document.getElementById('timerQuote').value = '';
+      document.getElementById('timerHours').value = '0';
+      document.getElementById('timerMinutes').value = '0';
+      document.getElementById('timerSeconds').value = '0';
+    }
+
+    function createTimer() {
+      const title = document.getElementById('timerTitle').value || 'Timer';
+      const quote = document.getElementById('timerQuote').value;
+      const hours = parseInt(document.getElementById('timerHours').value) || 0;
+      const minutes = parseInt(document.getElementById('timerMinutes').value) || 0;
+      const seconds = parseInt(document.getElementById('timerSeconds').value) || 0;
+      
+      const duration = (hours * 3600 + minutes * 60 + seconds) * 1000;
+      
+      if (duration === 0) {
+        alert('Please set a duration for the timer');
+        return;
+      }
+      
+      timers.push({
+        title,
+        quote,
+        duration,
+        endTime: null,
+        running: false
+      });
+      
+      localStorage.setItem('timers', JSON.stringify(timers));
+      closeTimerModal();
+      renderTimers();
+    }
+
+    function startTimer(index) {
+      const timer = timers[index];
+      
+      if (timer.running) {
+        timer.running = false;
+        const remaining = Math.max(0, timer.endTime - Date.now());
+        timer.duration = remaining;
+        timer.endTime = null;
+      } else {
+        timer.running = true;
+        timer.endTime = Date.now() + timer.duration;
+      }
+      
+      localStorage.setItem('timers', JSON.stringify(timers));
+      renderTimers();
+    }
+
+    function resetTimer(index) {
+      const timer = timers[index];
+      const originalDuration = timer.endTime ? 
+        (timer.endTime - Date.now() + timer.duration) : 
+        timer.duration;
+      
+      timer.running = false;
+      timer.endTime = null;
+      timer.duration = originalDuration;
+      
+      localStorage.setItem('timers', JSON.stringify(timers));
+      renderTimers();
+    }
+
+    function deleteTimer(index) {
+      timers.splice(index, 1);
+      localStorage.setItem('timers', JSON.stringify(timers));
+      renderTimers();
+    }
+
+    function loadSecretNotes() {
+      const notes = localStorage.getItem('secretNotes') || '';
+      document.getElementById('secretNotes').value = notes;
+    }
+
+    function saveSecretNotes() {
+      const notes = document.getElementById('secretNotes').value;
+      localStorage.setItem('secretNotes', notes);
+      alert('Notes saved');
+    }
+
+    function openFullscreenClock() {
+      document.getElementById('fullscreenClock').classList.add('active');
+    }
+
+    function closeFullscreenClock() {
+      document.getElementById('fullscreenClock').classList.remove('active');
+    }
+
+    function init() {
+      updateDateTime();
+      setInterval(updateDateTime, 1000);
+      setInterval(() => {
+        if (timers.some(t => t.running)) {
+          renderTimers();
         }
+      }, 100);
+      
+      renderCalendar();
+      loadTimers();
+      loadSecretNotes();
+    }
 
-        function closeSidebar() {
-            document.getElementById('sidebar').classList.remove('active');
-            document.getElementById('overlay').classList.remove('active');
-        }
+    document.getElementById('passwordInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') login();
+    });
 
-        // Smooth scroll
-        function scrollToSection(sectionId) {
-            const section = document.getElementById(sectionId);
-            section.scrollIntoView({ behavior: 'smooth' });
-            closeSidebar();
-        }
-
-        // Show event details modal
-        function showEventDetails(title, description) {
-            document.getElementById('modalTitle').textContent = title;
-            document.getElementById('modalDescription').textContent = description;
-            document.getElementById('eventModal').style.display = 'flex';
-        }
-
-        // Close modal
-        function closeModal() {
-            document.getElementById('eventModal').style.display = 'none';
-        }
-
-        // Close modal on outside click
-        window.onclick = function(event) {
-            const modal = document.getElementById('eventModal');
-            if (event.target === modal) {
-                modal.style.display = 'none';
-            }
-        }
-    </script>
+    if (sessionStorage.getItem('authenticated') === 'true') {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('appContainer').classList.add('active');
+      init();
+    }
+  </script>
 </body>
 </html>
